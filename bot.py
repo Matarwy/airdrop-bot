@@ -1,6 +1,6 @@
 from telegram.ext import Updater, CommandHandler, RegexHandler, MessageHandler,Filters
 from telegram import ReplyKeyboardMarkup,Bot
-import requests,json
+import json
 import os
 
 config = json.load(open('config.json','r'))
@@ -19,7 +19,17 @@ PORT = int(os.environ.get('PORT','8443'))
 
 
 def start(update, context):
+    intro_msg = f'Hello, {update.message.chat.username} ! I am your friendly -Project Name- Airdrop bot\n\n' \
+                f'Please follow the instructions below to get your reward tokens.\n\n' \
+                f'By Participating you are agreeing to the -Project Name- (Airdrop) Program Terms and Conditions.\n\n'
     if update.message.chat.type == 'private':
+        started_msg = f'🔹Welcome to the Airdrop Program!🔹\n' \
+                      f'📢 Airdrop Rules\n\n' \
+                      f'📢 1. Join Telegram Group: https://tm.me\n' \
+                      f'📢 2. Join Telegram Channel: https://tm.me\n' \
+                      f'📢 3. Join Twitter: https://tm.me\n' \
+                      f'📢 4. Join Discord: https://tm.me\n\n' \
+                      f'📢 After Finish Submit your twitter username\n'
         user = str(update.message.chat.username)
         if user not in data['users']:
             data['users'].append(user)
@@ -42,9 +52,7 @@ def start(update, context):
             data['id'][user] = data['total']
             data['process'][user] = "twitter"
             json.dump(data,open('users.json','w'))
-            msg = config['intro']
-            started_msg = 'TWITTER MESSAGE'
-            update.message.reply_text(msg)
+            update.message.reply_text(intro_msg)
             update.message.reply_text(started_msg)
         else:
             welcome_msg = "DASHBOARD MESSAGE"
@@ -52,7 +60,7 @@ def start(update, context):
             update.message.reply_text(welcome_msg,reply_markup=reply_markup)
 
     else:
-        msg = '{} \n. I don\'t reply in group, come in private'.format(config['intro'])
+        msg = '{} \n. I don\'t reply in group, come in private'.format(intro_msg)
         update.message.reply_text(msg)
 
 def twitter(update, context):
@@ -94,17 +102,26 @@ def extra(update, context):
             data['twitter'][user] = update.message.text
             data['process'][user] = 'discord'
             json.dump(data,open('users.json','w'))
-            update.message.reply_text("DISCORD MESSAGE")
+            retweetlinkmsg = f'Send your Re-Tweet Link\n\n'
+            update.message.reply_text(retweetlinkmsg)
         elif data["process"][user] == 'discord':
             data['discord'][user] = update.message.text
             data['process'][user] = "eth"
             json.dump(data,open('users.json','w'))
-            update.message.reply_text("WALLET MESSAGE")
+            walletmsg = f'Send your Etheruem Wallet\n\n' \
+                        f'EX. 0x00000000000000000000000000000000\n\n'
+            update.message.reply_text(walletmsg)
         elif data["process"][user] == 'eth':
             data['eth'][user] = update.message.text
             data['process'][user] = "finished"
             json.dump(data,open('users.json','w'))
-            msg = "DASHBOARD MESSAGE!"
+            msg = f"Thank's {update.message.chat.username} for joining our airdrop.\n\n" \
+                f"Your airdrop will be sent to your wallet after the end of the airdrop.\n\n" \
+                f"You have earned {str(config['signup'])} tokens.\n\n " \
+                f"for Each referral you will earn {str(config['ref'])} tokens.\n\n " \
+                f"Join our telegram channel for more updates.\n\n" \
+                f"Telegram Channel: https://t.me\n\n" \
+
             reply_markup = ReplyKeyboardMarkup(dash_key,resize_keyboard=True)
             update.message.reply_text(msg,reply_markup=reply_markup)
         else:
@@ -170,7 +187,13 @@ def bal(update, context):
 
 def detail(update, context):
     if update.message.chat.type == 'private':
-        msg = config['details']
+        msg = f'🔹Welcome to the Airdrop Program!🔹\n' \
+              f'📢 Airdrop Rules\n\n' \
+              f'📢 1. Join Telegram Group: https://tm.me\n' \
+              f'📢 2. Join Telegram Channel: https://tm.me\n' \
+              f'📢 3. Join Twitter: https://tm.me\n' \
+              f'📢 4. Join Discord: https://tm.me\n\n' \
+              f'📢 After Finish Submit your twitter username\n'
         reply_markup = ReplyKeyboardMarkup(dash_key,resize_keyboard=True)
         update.message.reply_text(msg,reply_markup=reply_markup)
 
